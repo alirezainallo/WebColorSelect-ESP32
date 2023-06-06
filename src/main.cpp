@@ -5,6 +5,58 @@
 
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
+/*
+// Stores LED state
+String ledState;
+
+// Replaces placeholder with LED state value
+String processor(const String& var){
+  Serial.println(var);
+  if(var == "STATE"){
+    if(digitalRead(ledPin)){
+      ledState = "ON";
+    }
+    else{
+      ledState = "OFF";
+    }
+    Serial.print(ledState);
+    return ledState;
+  }
+  return String();
+}
+*/
+void webServer_init(void){
+  // Route for root / web page
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(SPIFFS, "/index.html", String(), false);
+  });
+  // Route to load style.css file
+  server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(SPIFFS, "/style.css", "text/css");
+  });
+  server.on("/hello", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(200, "text/plain", "Hello, world");
+  });
+  /*
+  // Route to set GPIO to HIGH
+  server.on("/on", HTTP_GET, [](AsyncWebServerRequest *request){
+    digitalWrite(ledPin, HIGH);    
+    request->send(SPIFFS, "/index.html", String(), false, processor);
+  });
+  
+  // Route to set GPIO to LOW
+  server.on("/off", HTTP_GET, [](AsyncWebServerRequest *request){
+    digitalWrite(ledPin, LOW);    
+    request->send(SPIFFS, "/index.html", String(), false, processor);
+  });
+
+  */
+  
+  // Start server
+  server.begin();
+  Serial.println("server.begin();");
+}
+
 
 void spiffs_init(void);
 
@@ -25,6 +77,8 @@ void setup() {
   serial_init(serialRate);
   spiffs_init();
   WiFi_init(WiFi_SSID, WiFi_PASS);
+  webServer_init();
+
   heartBeat_init(600);
 }
 
@@ -51,7 +105,7 @@ void heartBeat_loop(void){
 
 void serial_init(unsigned long rate){
   Serial.begin(rate);
-  delay(3000);
+  // delay(3000);
   Serial.println("\n\nStarting...");
 }
 
@@ -93,4 +147,14 @@ void spiffs_init(void){
     while(true)delay(500);
   }
   Serial.println("SPIFFS mount Ok");
+
+  /*
+  File tmp = SPIFFS.open("/hello.txt", "r+", true);
+  if(!tmp){
+    Serial.println("if(tmp), Fail");
+  }
+  else{
+    Serial.println("if(tmp), Ok");
+  }
+  */
 }
