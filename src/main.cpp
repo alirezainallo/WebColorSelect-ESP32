@@ -1,5 +1,12 @@
+#include <ESPAsyncWebServer.h>
 #include <Arduino.h>
+#include <SPIFFS.h>
 #include "main.h"
+
+// Create AsyncWebServer object on port 80
+AsyncWebServer server(80);
+
+void spiffs_init(void);
 
 #define LED_PIN 2
 void serial_init(unsigned long rate);
@@ -14,8 +21,9 @@ void WiFi_init(const char * ssid, const char * pass);
 
 void setup() {
   // put your setup code here, to run once:
-  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable   detector
+  // WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable   detector
   serial_init(serialRate);
+  spiffs_init();
   WiFi_init(WiFi_SSID, WiFi_PASS);
   heartBeat_init(600);
 }
@@ -76,4 +84,13 @@ void Wifi_onEvent(arduino_event_id_t event) {
 
         break;
   }
+}
+
+void spiffs_init(void){
+  // Initialize SPIFFS
+  if(!SPIFFS.begin(true)){
+    Serial.println("An Error has occurred while mounting SPIFFS");
+    while(true)delay(500);
+  }
+  Serial.println("SPIFFS mount Ok");
 }
