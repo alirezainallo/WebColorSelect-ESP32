@@ -3,6 +3,8 @@
 #include <SPIFFS.h>
 #include "main.h"
 
+bool changeColorFlag = false;
+String newColorValue = "";
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
 /*
@@ -28,8 +30,23 @@ String processor(const String& var){
 void webServer_init(void){
   // Route for root / web page
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+    int paramsNr = request->params();
+    Serial.println(paramsNr);
+
+    if(paramsNr){
+      AsyncWebParameter* p = request->getParam(0);
+      Serial.print("Param name: ");
+      Serial.println(p->name());
+      
+      Serial.print("Param value: ");
+      Serial.println(p->value());
+      newColorValue = p->value();
+      changeColorFlag = true;
+      Serial.println("------");
+    }
     request->send(SPIFFS, "/index.html", String(), false);
   });
+
   // Route to load style.css file
   server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(SPIFFS, "/style.css", "text/css");
