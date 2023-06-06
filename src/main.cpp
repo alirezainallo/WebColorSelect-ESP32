@@ -75,6 +75,13 @@ void webServer_init(void){
 }
 
 
+void webServer_loop(void){
+  if(changeColorFlag){
+    changeColorFlag = false;
+    //color is ready in newColorValue in string type //like that #009900
+  }
+}
+
 void spiffs_init(void);
 
 #define LED_PIN 2
