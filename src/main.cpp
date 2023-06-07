@@ -47,8 +47,8 @@ void webServer_init(void){
       Serial.print("Param value: ");
       Serial.println(p->value());
       newColorValue = p->value();
-      changeColorFlag = true;
       Serial.println("------");
+      changeColorFlag = true;
     }
     request->send(SPIFFS, "/index.html", String(), false);
   });
@@ -82,8 +82,8 @@ void webServer_init(void){
 void webServer_loop(void){
   if(changeColorFlag){
     uint32_t r,g,b;
-
     changeColorFlag = false;
+
     //color is ready in newColorValue in string type //like that #009900
     Serial.printf("value: %s\n", newColorValue.c_str());
     strHex2colorHex((char*)(newColorValue.c_str()), &r, &g, &b);
@@ -275,7 +275,8 @@ void spiffs_init(void){
 void rgbArray_init(void){
   // rgbArray_ms  = ms;
   SPI.begin();
-  rgbArray_feed(&rgbArray, 0x00, 0x00, 0x00);
+  delay(50);
+  rgbArray_feed(&rgbArray, 255, 255, 0);
   SPI.transfer(&rgbArray, sizeof(rgbArray));
 }
 void rgbArray_loop(void){
@@ -331,9 +332,9 @@ void rgbArray_loop(void){
 void rgbFrame_init(rgbFrame_t *Frame, uint32_t r, uint32_t g, uint32_t b){
   Frame->start3ones = 0x7;
   Frame->brightness = 0x1F;//global
-  Frame->BLUE       = b;
-  Frame->GREEN      = g;
-  Frame->RED        = r;
+  Frame->BLUE       = (uint8_t)b;
+  Frame->GREEN      = (uint8_t)g;
+  Frame->RED        = (uint8_t)r;
 }
 void rgbArray_feed(rgbArray_t *frame, uint32_t r, uint32_t g, uint32_t b){
   frame->startFrame = 0x00000000;
@@ -375,7 +376,7 @@ void setColor(ledColor_t color, uint32_t value){
   }
 }
 void displayColor(uint32_t r, uint32_t g, uint32_t b){
-  rgbArray_feed(&rgbArray, 0x00, 0x00, 0x00);
+  rgbArray_feed(&rgbArray, r, g, b);
   SPI.transfer(&rgbArray, sizeof(rgbArray));
 }
 
