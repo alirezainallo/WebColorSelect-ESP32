@@ -35,6 +35,7 @@ String processor(const String& var){
 */
 void webServer_init(void){
   // Route for root / web page
+  // /?color=ff00dd
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
     int paramsNr = request->params();
     Serial.println(paramsNr);
@@ -223,7 +224,7 @@ void serial_init(unsigned long rate){
 }
 
 void WiFi_init(const char * ssid, const char * pass){
-  WiFi.mode(WIFI_MODE_STA); 
+  WiFi.mode(WIFI_MODE_STA);
   WiFi.setAutoConnect(true);
   WiFi.setAutoReconnect(true);
   WiFi.begin(WiFi_SSID, WiFi_PASS);
